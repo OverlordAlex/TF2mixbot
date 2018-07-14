@@ -12,7 +12,7 @@ Commands:
 * set_players - set the number of players required for the mix 
 
 * rem_player - remove a player id from the mix (admin only)
-
+```
 TODO:
  /*
      TODO:
@@ -21,3 +21,4 @@ TODO:
          3. Automatic start when full
          4. Remove players by name, instead of ID
 */
+```
