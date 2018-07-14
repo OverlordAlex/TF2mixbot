@@ -30,6 +30,7 @@ public void OnPluginStart()
     RegConsoleCmd("add", Command_add);
     RegConsoleCmd("rem", Command_rem);
     RegConsoleCmd("show", Command_show);
+    RegConsoleCmd("show_players", Command_show_players);
     RegConsoleCmd("start", Command_start);
     RegConsoleCmd("set_players", Command_set_players);
     
@@ -136,6 +137,13 @@ public Action Command_rem(client, args)
 public Action:Command_show(client, args)
 {
     PrintToChatAll("MIX: %d/%d players, %d ready to sub", bt_num_players, bt_max_players, bt_num_subs)
+    return Plugin_Handled;
+}
+
+public Action:Command_show_players(client, args)
+{
+    print_names();
+    return Plugin_Handled;
 }
 
 public void print_names()
@@ -191,9 +199,11 @@ public Action:Command_remove(client, args)
     GetCmdArg(1, player_id, sizeof(player_id));
     int tmp = 0;
     tmp = StringToInt(player_id);
+    PrintToChatAll("Gor player %d to remove", tmp);
 
     for (int i = 0; i < bt_num_players; i++)
     {
+        PrintToChatAll("checking %d against %d", bt_players[i], tmp);
         if (bt_players[i] == tmp)
         {
             deleteFromPlayers(i);
