@@ -12,13 +12,13 @@ Commands:
 * set_players - set the number of players required for the mix 
 
 * rem_player - remove a player id from the mix (admin only)
-```
+
 TODO:
+```
  /*
-     TODO:
-         1. IRC / DISCORD integration
-         2. Periodic printing the mix/12 status
-         3. Automatic start when full
-         4. Remove players by name, instead of ID
+     1. IRC / DISCORD integration
+     2. Periodic printing the mix/12 status
+     3. Automatic start when full
+     4. Remove players by name, instead of ID
 */
 ```
