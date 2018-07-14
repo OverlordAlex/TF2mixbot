@@ -7,13 +7,21 @@ int bt_num_subs = 0;
 int bt_subs[36];
 int bt_max_players = 12;
 
+/*
+    TODO:
+        1. IRC / DISCORD integration
+        2. Periodic printing the mix/12 status
+        3. Automatic start when full
+*/
+
+
 public Plugin myinfo = 
 {
     name = "Pickup Bot for ZA TF2",
     author = "Alex Wright",
     description = "A bot for managing pickups",
     version = "1.0",
-    url = "N/A"
+    url = "https://github.com/OverlordAlex/TF2mixbot"
 };
 
 public void OnPluginStart()
