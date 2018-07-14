@@ -22,11 +22,10 @@ public void OnPluginStart()
     RegConsoleCmd("add", Command_add);
     RegConsoleCmd("rem", Command_rem);
     RegConsoleCmd("show", Command_show);
-    RegConsoleCmd("start", Command_show);
+    RegConsoleCmd("start", Command_start);
     RegConsoleCmd("set_players", Command_set_players);
     
-    /*RegAdminCmd("pickup_remove_player", Command_remove, ADMFLAG_KICK);*/
-    /*RegAdminCmd("pickup_start", Command_start, ADMFLAG_KICK);*/
+    RegAdminCmd("rem_player", Command_remove, ADMFLAG_CUSTOM3);
 }
 
 
@@ -95,7 +94,6 @@ public void deleteFromSubs(int index)
     bt_num_subs--;
 }
 
-
 public Action Command_rem(client, args)
 {
     for (int i = 0; i < bt_num_players; i++)
@@ -130,28 +128,86 @@ public Action Command_rem(client, args)
 public Action:Command_show(client, args)
 {
     PrintToChatAll("MIX: %d/%d players, %d ready to sub", bt_num_players, bt_max_players, bt_num_subs)
+}
+
+public void print_names()
+{
     PrintToChatAll("PLAYERS:");
+    decl String:all_players[255];
+    int nn = 0;
     for (int i = 0; i < bt_num_players; i++)
     {
-        decl String:name[64];
+        decl String:name[32];
         GetClientName(bt_players[i], name, sizeof(name));
-        LogAction(client, -1, "%s", name);
-        PrintToChatAll("%s", name);
+        StrCat(String:all_players, 255, String:name);
+        StrCat(all_players, 255, "::");
+        nn++;
+        if (nn == 7)
+        {
+            PrintToChatAll("%s", all_players);
+            all_players = "";
+            nn = 0;
+        }
+    }
+    if (nn > 0)
+    {
+        PrintToChatAll("%s", all_players);
+        all_players = "";
+        nn = 0;
     }
 
     PrintToChatAll("SUBS:");
     for (int i = 0; i < bt_num_subs; i++)
     {
-        decl String:name[64];
+        decl String:name[32];
         GetClientName(bt_subs[i], name, sizeof(name));
-        LogAction(client, -1, "%s", name);
-        PrintToChatAll("%s", name);
+        StrCat(all_players, 255, name);
+        StrCat(all_players, 255, "::");
+        nn++;
+        if (nn == 7)
+        {
+            PrintToChatAll("%s", all_players);
+            all_players = "";
+            nn = 0;
+        }
+    }
+    if (nn > 0)
+    {
+        PrintToChatAll("%s", all_players);
     }
 }
 
 public Action:Command_remove(client, args)
 {
-    LogAction(client, -1, "TODO TODO TODO");
+    decl String:player_id[32];
+    GetCmdArg(1, player_id, sizeof(player_id));
+    int tmp = 0;
+    tmp = StringToInt(player_id);
+
+    for (int i = 0; i < bt_num_players; i++)
+    {
+        if (bt_players[i] == tmp)
+        {
+            deleteFromPlayers(i);
+            if (bt_num_subs > 0)
+            {
+                Command_add(bt_subs[0], args);
+                deleteFromSubs(0);
+            }
+            ReplyToCommand(client, "Removed from mix!")
+            return Plugin_Handled;
+        }
+    }
+    for (int i = 0; i < bt_num_subs; i++)
+    {
+        if (bt_subs[i] == tmp)
+        {
+            deleteFromSubs(i);
+            ReplyToCommand(client, "Removed from subs")
+            return Plugin_Handled;
+        }
+    }
+    return Plugin_Handled;
 }
 
 public Action:Command_start(client, args)
@@ -163,6 +219,7 @@ public Action:Command_start(client, args)
         LogAction(client, -1, "Not enough players to start")
         return Plugin_Handled;
     } 
+    print_names();
     bt_num_players = 0;
     bt_num_subs = 0;
     LogAction(client, -1, "Starting the mix!");
@@ -173,13 +230,22 @@ public Action:Command_set_players(client, args)
 {
     decl String:nplayers[32];
     GetCmdArg(1, nplayers, sizeof(nplayers));
-    bt_max_players = StringToInt(nplayers);
-    if (bt_max_players > 24)
+    int tmp = 0;
+    tmp = StringToInt(nplayers);
+    if (tmp > 24)
     {
         bt_max_players = 24;
         ReplyToCommand(client, "Cant have more than 24 max players!")
         LogAction(client, -1, "Cant have more than 24 max player!")
         return Plugin_Handled;
     }
+    if (tmp < 2)
+    {
+        bt_max_players = 2;
+        ReplyToCommand(client, "Cant have less than 2 players!")
+        LogAction(client, -1, "Cant have less than 2 players!")
+        return Plugin_Handled;
+    }
+    bt_max_players = tmp;
     return Plugin_Handled;
 }
